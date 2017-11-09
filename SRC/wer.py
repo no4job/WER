@@ -252,7 +252,7 @@ if __name__ == "__main__":
         converted_str = Convert_to_UTF_string(compared,ref)
         compared_str = converted_str[0]
         ref_str = converted_str[1]
-        # print (compared_str)
+        # print(compared_str)
         # print (ref_str)
         # print (Levenshtein.distance(compared_str, ref_str))
         edit_ops = Levenshtein.editops(compared_str, ref_str)
