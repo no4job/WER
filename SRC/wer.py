@@ -171,6 +171,11 @@ def get_all_syncronized_list(ref_file_path,compared_file_dir_path, compared_file
             # compared_sync,ref_sync = syncronize_list(compared,ref,edit_ops)
             syncronized_list=list(syncronize_list(compared,ref,edit_ops))
             syncronized_list.append(filename)
+            syncronized_list.append(os.path.basename(ref_file_path))
+            if len(ref)>0 :
+                syncronized_list.append(len(edit_ops)/len(ref))
+            else:
+                syncronized_list.append(None)
             all_syncronized_list.append(syncronized_list)
     return all_syncronized_list
 
@@ -205,6 +210,7 @@ def syncronize_all(all_syncronized_list):
             ref_syncronized_list.append(element)
     # if  len(max_skip_num_list)== no_skip_number+1:
     ref_syncronized_list.extend([['','skip'] for x in range(max_skip_num_list[no_skip_number])])
+    ref_syncronized_list=[ref_syncronized_list,all_syncronized_list[0][3],all_syncronized_list[0][4]]
 
 
 
@@ -226,8 +232,38 @@ def syncronize_all(all_syncronized_list):
         # if  len(max_skip_num_list)== no_skip_number+1:
         compared_syncronized_list.extend([['','skip']
                                           for x in range(max_skip_num_list[no_skip_number]-skip_number)])
-        all_compared_syncronized_list.append([compared_syncronized_list,syncronized_list[2]])
+        all_compared_syncronized_list.append([compared_syncronized_list,syncronized_list[2],syncronized_list[4]])
     return ref_syncronized_list,all_compared_syncronized_list
+
+def save_csv(ref_syncronized_list,all_compared_syncronized_list,csv_file,append = 0):
+    out_csv = csv_tools.csvLog(csv_file,append)
+    header_list = [ref_syncronized_list[1]]
+    for compared_syncronized_list in all_compared_syncronized_list:
+        header_list.append(compared_syncronized_list[1])
+    if append == 0:
+        out_csv.add_row(header_list)
+    csv_row = [ref_syncronized_list[2]]
+    for compared_syncronized_list in all_compared_syncronized_list:
+        csv_row.append(compared_syncronized_list[2])
+    if append == 0:
+        out_csv.add_row(csv_row)
+    for i in range(len(ref_syncronized_list[0])):
+        csv_row = [mark_edit_op(ref_syncronized_list[0][i][0],ref_syncronized_list[0][i][1])]
+        for compared_syncronized_list in all_compared_syncronized_list:
+            csv_row.append(mark_edit_op(compared_syncronized_list[0][i][0],compared_syncronized_list[0][i][1]))
+        out_csv.add_row(csv_row)
+    return out_csv
+
+def mark_edit_op(value,edit_op):
+    if edit_op == "skip":
+        return value
+    if edit_op == "delete":
+        return '#'+value
+    if edit_op == "insert":
+        return '<>'
+    if edit_op == "replace":
+        return '@'+ value
+    return value
 
 if __name__ == "__main__":
     CALC_DIR = 1
@@ -238,10 +274,14 @@ if __name__ == "__main__":
     REF_FILE_NAME = 'ref.txt'
     COMPARED_FILE_DIR_PATH = '../IN/'
     COMPARED_FILE_NAME = 'compared.txt'
+    OUT_CSV_FILE_DIR_PATH = '../OUT/'
+    OUT_CSV_FILE_NAME = 'out.csv'
     start_time = time.clock()
+    ref_syncronized_list = []
+    all_compared_syncronized_list = []
     if CALC_DIR:
         all_syncronized_list = get_all_syncronized_list(REF_FILE_DIR_PATH+REF_FILE_NAME,COMPARED_FILE_DIR_PATH, r'^compared_\d+')
-        syncronize_all(all_syncronized_list)
+        ref_syncronized_list,all_compared_syncronized_list=syncronize_all(all_syncronized_list)
     else:
         with open(REF_FILE_DIR_PATH+REF_FILE_NAME, 'r', encoding='utf-8') as ref_file, \
                 open(COMPARED_FILE_DIR_PATH+COMPARED_FILE_NAME, 'r', encoding='utf-8') as compared_file:
@@ -252,19 +292,14 @@ if __name__ == "__main__":
         converted_str = Convert_to_UTF_string(compared,ref)
         compared_str = converted_str[0]
         ref_str = converted_str[1]
-        # print(compared_str)
-        # print (ref_str)
-        # print (Levenshtein.distance(compared_str, ref_str))
         edit_ops = Levenshtein.editops(compared_str, ref_str)
         print (len(edit_ops))
         print (edit_ops)
-        # ******  tested OK 616s
-        # print(wer(compared_str.split()[:10000:],ref_str.split()[:10000:]))
-        # ******  tested OK 1.26s
-        # ****** print(editdistance.eval(compared_str.split(),ref_str.split()))
         compared_sync,ref_sync = syncronize_list(compared,ref,edit_ops)
         print(ref_sync)
         print(compared_sync)
+    save_csv(ref_syncronized_list,all_compared_syncronized_list,
+             OUT_CSV_FILE_DIR_PATH+OUT_CSV_FILE_NAME,append = 0)
     finish_time = time.clock()
     print("{:.2f}s".format((finish_time-start_time)))
     exit(0)
