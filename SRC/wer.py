@@ -270,11 +270,11 @@ if __name__ == "__main__":
     # import doctest
     # doctest.testmod()
     # print (wer("who is there".split(), "who is there 123".split()))
-    REF_FILE_DIR_PATH = '../IN/'
+    REF_FILE_DIR_PATH = '../TXT_IN/'
     REF_FILE_NAME = 'ref.txt'
-    COMPARED_FILE_DIR_PATH = '../IN/'
+    COMPARED_FILE_DIR_PATH = '../TXT_IN/'
     COMPARED_FILE_NAME = 'compared.txt'
-    OUT_CSV_FILE_DIR_PATH = '../OUT/'
+    OUT_CSV_FILE_DIR_PATH = '../TXT_OUT/'
     OUT_CSV_FILE_NAME = 'out.csv'
     start_time = time.clock()
     ref_syncronized_list = []

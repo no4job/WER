@@ -1,0 +1,21 @@
+ref.txt	compared_0.txt	compared_1.txt	compared_10.txt	compared_11.txt	compared_12.txt	compared_13.txt	compared_14.txt	compared_15.txt	compared_16.txt	compared_17.txt	compared_18.txt	compared_19.txt	compared_2.txt	compared_3.txt	compared_4.txt	compared_5.txt	compared_6.txt	compared_7.txt	compared_8.txt	compared_9.txt
+0.0	0.0	0.1	0.1	0.3	0.1	0.3	0.1	0.3	0.1	0.3	0.1	0.3	0.3	0.1	0.3	0.1	0.3	0.9	0.1	0.3
+		#a											#a					#a		
+													#b					#b		
+													#c					#c		
+0	0	0	0	0	0	0	@a	@a	0	0	0	0	0	0	0	0	0	0	<>	<>
+1	1	1	1	1	1	1	1	@b	1	1	1	1	1	1	1	1	1	1	1	<>
+2	2	2	2	2	2	2	2	@c	2	2	2	2	2	2	2	2	2	2	2	<>
+3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3	3
+4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4	4
+5	5	5	5	5	<>	<>	5	5	5	5	@a	@a	5	5	5	5	5	5	5	5
+																#a	#a	#a		
+																	#b	#b		
+																	#c	#c		
+6	6	6	6	6	6	<>	6	6	6	6	6	@b	6	6	6	6	6	6	6	6
+7	7	7	7	<>	7	<>	7	7	7	@a	7	@c	7	7	7	7	7	7	7	7
+8	8	8	8	<>	8	8	8	8	8	@b	8	8	8	8	8	8	8	8	8	8
+9	9	9	<>	<>	9	9	9	9	@a	@c	9	9	9	9	9	9	9	9	9	9
+														#a	#a			#a		
+															#b			#b		
+															#c			#c		
