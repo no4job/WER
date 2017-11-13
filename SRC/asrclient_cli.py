@@ -136,5 +136,12 @@ def main(chunk_size, start_with_chunk, max_chunks_count, record, files, silent, 
                          callback=default_callback,
                          **kwars)
 
+# def main_(arg):
+#     print (__file__)
+#     sys.argv = []
+#     sys.argv.append(__file__)
+#     sys.argv.extend(arg)
+#     print (sys.argv)
+#     main()
 if __name__ == "__main__":
         main()

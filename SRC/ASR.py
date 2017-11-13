@@ -1,6 +1,11 @@
 import subprocess
 import sys
 import os
+# asrclient_cli = __import__("asrclient-cli")
+import asrclient_cli
+# *******************
+# imported_module = __import__("advanced_callback_example", globals(), locals(), [], 0)
+# *********************
 import codecs
 '''
 DEFAULT_KEY_VALUE = 'paste-your-own-key'
@@ -52,19 +57,28 @@ if __name__ == "__main__":
     RECOGNIZED_FILE_NAME = 'recognized.txt'
     API_KEY = '924df669-0866-4524-b2ed-1e6c2eda6867'
     MODEL = 'freeform'
-    arg = '--key {} --model {} {}'.format(API_KEY, MODEL, os.path.abspath(AUDIO_IN_DIR_PATH+AUDIO_FILE_NAME))
+    cbck_module  = "advanced_callback_example"
+    # realtime = "--realtime"
+    realtime = ""
+    arg = '--key {} --model {} --callback-module {} {} {}'.format(API_KEY, MODEL, cbck_module,realtime,os.path.abspath(AUDIO_IN_DIR_PATH+AUDIO_FILE_NAME))
     # print(sys.executable)
     # sys.stdout = codecs.getwriter('cp866')(sys.stdout,'replace')
     # try:
-        # retcode =  subprocess.call(sys.executable + "asrclient-cli.py" + " arg", shell=True)
-        #retcode =  subprocess.call(sys.executable + "asrclient-cli.py" + " arg", shell=False)
-        # retcode =  subprocess.check_output(sys.executable + "asrclient-cli.py" + " arg", shell=True)
+    # retcode =  subprocess.call(sys.executable + "asrclient-cli.py" + " arg", shell=True)
+    #retcode =  subprocess.call(sys.executable + "asrclient-cli.py" + " arg", shell=False)
+    # retcode =  subprocess.check_output(sys.executable + "asrclient-cli.py" + " arg", shell=True)
     process = subprocess.Popen(sys.executable + " asrclient-cli.py" + " " + arg, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout = process.communicate()[0]
     stderr = process.communicate()[1]
-    print (stdout.decode(encoding="cp866"))
+    # ******print (stdout.decode(encoding="cp866"))
     print (stderr.decode(encoding="cp866"))
+    print (stdout.decode(encoding="utf-8"))
+    # print (stderr.decode(encoding="utf-8"))
     if process.returncode != 0:
         print ("Execution failed, return code: {}".format(process.returncode))
     # except OSError as e:
     #     print("Execution failed:", e)
+
+    # print (sys.argv)
+    # asrclient_cli.main_(arg)
+    # asrclient_cli.main()
