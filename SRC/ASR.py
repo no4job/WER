@@ -103,8 +103,10 @@ def recognize(file,options=None):
                                shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout = process.communicate()[0]
     stderr = process.communicate()[1]
-    print (stderr.decode(encoding="cp866"))
-    print (stdout.decode(encoding="utf-8"))
+    if len(stderr)>0:
+        print (stderr.decode(encoding="cp866"))
+    if len(stdout)>0:
+        print (stdout.decode(encoding="utf-8"))
     if process.returncode != 0:
         print ("Execution failed, return code: {}".format(process.returncode))
         exit (process.returncode)

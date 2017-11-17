@@ -3,6 +3,7 @@ import time
 import Levenshtein
 import re
 import os
+from io import StringIO
 # import csv
 import csv_tools
 # import editdistance
@@ -154,7 +155,7 @@ def syncronize_list(lst_1,lst_2,edit_ops):
             lst_2_sync.insert(delete_position,['','skip'])
     return lst_1_sync,lst_2_sync
 
-def get_all_syncronized_list(ref_file_path,compared_file_dir_path, compared_file_pattern):
+def get_all_syncronized_list_(ref_file_path,compared_file_dir_path, compared_file_pattern):
     all_syncronized_list = []
     for filename in os.listdir(compared_file_dir_path):
         if re.match(compared_file_pattern,filename):
@@ -178,6 +179,49 @@ def get_all_syncronized_list(ref_file_path,compared_file_dir_path, compared_file
                 syncronized_list.append(None)
             all_syncronized_list.append(syncronized_list)
     return all_syncronized_list
+
+def get_all_syncronized_list(ref_file_path,compared_file_dir_path, compared_file_pattern):
+    all_syncronized_list = []
+    for filename in os.listdir(compared_file_dir_path):
+        if re.match(compared_file_pattern,filename):
+            with open(ref_file_path, 'r', encoding='utf-8') as ref_file, \
+                    open(compared_file_dir_path+filename, 'r', encoding='utf-8') as compared_file:
+                all_syncronized_list.append(syncronize_file(ref_file,compared_file))
+    return all_syncronized_list
+
+def syncronize_str(ref_file,compared_str):
+    compared_file = StringIO()
+    compared_file.write(compared_str)
+    result = syncronize_file(ref_file,compared_file)
+    return result
+
+def syncronize_file(ref_file,compared_file):
+    # all_syncronized_list = []
+    # for filename in os.listdir(compared_file_dir_path):
+    #     if re.match(compared_file_pattern,filename):
+    # with open(ref_file_path, 'r', encoding='utf-8') as ref_file, \
+    #         open(compared_file_path, 'r', encoding='utf-8') as compared_file:
+    ref_str = ref_file.read().replace('\n', ' ').replace('\r', ' ')
+    compared_str = compared_file.read().replace('\n', ' ').replace('\r', ' ')
+    ref = ref_str.split()
+    compared = compared_str.split()
+    converted_str = Convert_to_UTF_string(compared,ref)
+    compared_str = converted_str[0]
+    ref_str = converted_str[1]
+    edit_ops = Levenshtein.editops(compared_str, ref_str)
+    # compared_sync,ref_sync = syncronize_list(compared,ref,edit_ops)
+    syncronized_list=list(syncronize_list(compared,ref,edit_ops))
+    # syncronized_list.append(filename)
+    # syncronized_list.append(os.path.basename(compared_file_path))
+    syncronized_list.append(os.path.basename(compared_file.name))
+    syncronized_list.append(os.path.basename(ref_file.name))
+    if len(ref)>0 :
+        syncronized_list.append(len(edit_ops)/len(ref))
+    else:
+        syncronized_list.append(None)
+    return syncronized_list
+            # all_syncronized_list.append(syncronized_list)
+    # return all_syncronized_list
 
 def syncronize_all(all_syncronized_list):
     all_skip_num_list =[]
@@ -270,11 +314,11 @@ if __name__ == "__main__":
     # import doctest
     # doctest.testmod()
     # print (wer("who is there".split(), "who is there 123".split()))
-    REF_FILE_DIR_PATH = '../TXT_IN/'
+    REF_FILE_DIR_PATH = '../REF_TXT/'
     REF_FILE_NAME = 'ref.txt'
     COMPARED_FILE_DIR_PATH = '../TXT_IN/'
     COMPARED_FILE_NAME = 'compared.txt'
-    OUT_CSV_FILE_DIR_PATH = '../TXT_OUT/'
+    OUT_CSV_FILE_DIR_PATH = '../CSV_OUT/'
     OUT_CSV_FILE_NAME = 'out.csv'
     start_time = time.clock()
     ref_syncronized_list = []
