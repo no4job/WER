@@ -3,6 +3,7 @@ import ASR
 import wer
 import time
 import audio_tools
+import shutil
 CALC_DIR = 0
 REF_FILE_DIR_PATH = '../REF_TXT/'
 # REF_FILE_NAME = 'ref.txt'
@@ -16,12 +17,13 @@ ASR_ITERATIONS = 5
 ASR_ITERATION_DELAY = 0.5
 ASR_SELECT_WER = "MIN"
 START_GUARD_TIME = 1
+RECOGNIZE_AUDIO_REF_FILE = 0
 
 if __name__ == "__main__":
     start_time = time.clock()
     time.sleep(START_GUARD_TIME)
-    # audio_ref_file_name = 'all_text_16_my_voice_cut.wav'
-    audio_ref_file_name = 'all_text_16_my_voice.wav'
+    audio_ref_file_name = 'all_text_16_my_voice_cut.wav'
+    # audio_ref_file_name = 'all_text_16_my_voice.wav'
     audio_ref_file = os.path.abspath(AUDIO_REF_DIR_PATH+audio_ref_file_name)
     audio_file_name = ".".join(audio_ref_file_name.split('.')[:-1:])+".rec.wav"
     audio_file = os.path.abspath(AUDIO_IN_DIR_PATH+audio_file_name)
@@ -38,9 +40,14 @@ if __name__ == "__main__":
     for root, dirs, files in os.walk(AUDIO_IN_DIR_PATH, topdown=False):
         for f in files:
             os.remove(os.path.join(root, f))
-    print("Start playback file:{}, duration:{:.1f}s".format(audio_ref_file_name,audio_tools.wav_duration(audio_ref_file)))
-    audio_tools.record_playback(audio_ref_file,audio_file)
-    print("End playback")
+    if RECOGNIZE_AUDIO_REF_FILE == 0:
+        print("Start playback file:{}, duration:{:.1f}s".format(audio_ref_file_name,audio_tools.wav_duration(audio_ref_file)))
+        audio_tools.record_playback(audio_ref_file,audio_file)
+        print("End playback")
+    else:
+        print("Direct reference file recognition:{}, duration:{:.1f}s".format(audio_ref_file_name,audio_tools.wav_duration(audio_ref_file)))
+        shutil.copy2(audio_ref_file,audio_file)
+
     print("Start ASR ")
     all_syncronized_list = []
     min_wer =  1

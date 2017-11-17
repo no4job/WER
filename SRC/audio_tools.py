@@ -8,7 +8,11 @@ import threading
 
 AUDIO_REF_DIR_PATH = '../REF_AUDIO_IN/'
 SAMPLE_RATE = 16000
+# DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
 DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+# DEFAULT_MICROPHONE_NAME = "Микрофон (Realtek High Definiti"
+
+
 RECORD_GUARD_TIME = 0.1
 
 def wav_duration(fname):
@@ -29,11 +33,11 @@ def get_microphone_index_by_name(microphone_name):
             selected = "*"
     return index
 
-def get_microphone_list(selected_microphone):
+def get_microphone_list():
     microphone_list =[]
     for i, microphone_name in enumerate(sr.Microphone.list_microphone_names()):
         microphone_name = microphone_name.encode(encoding="1252").decode(encoding="cp1251")
-        microphone_list.append(tuple(i,microphone_name))
+        microphone_list.append(tuple([i,microphone_name]))
     return microphone_list
 
 def show_microphone_list(microphone_list,selected_index = None,selected_name = None):
@@ -63,7 +67,9 @@ def record_playback(playback_audio_file,recorded_file,microphone_name = DEFAULT_
     t.join()
 
 if __name__ == '__main__':
-    pass
+    show_microphone_list(get_microphone_list(),selected_name = DEFAULT_MICROPHONE_NAME)
+
+    # pass
     '''
     index = None
     for i, microphone_name in enumerate(sr.Microphone.list_microphone_names()):
