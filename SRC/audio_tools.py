@@ -9,8 +9,9 @@ import threading
 AUDIO_REF_DIR_PATH = '../REF_AUDIO_IN/'
 SAMPLE_RATE = 16000
 # DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
-DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+# DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
 # DEFAULT_MICROPHONE_NAME = "Микрофон (Realtek High Definiti"
+DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual"
 
 
 RECORD_GUARD_TIME = 0.1
@@ -25,12 +26,12 @@ def wav_duration(fname):
 
 def get_microphone_index_by_name(microphone_name):
     index = None
-    for i, microphone_name in enumerate(sr.Microphone.list_microphone_names()):
-        selected = " "
-        microphone_name = microphone_name.encode(encoding="1252").decode(encoding="cp1251")
-        if microphone_name == "Микрофон (B525 HD Webcam)":
+    for i, name in enumerate(sr.Microphone.list_microphone_names()):
+        # selected = " "
+        name = name.encode(encoding="1252").decode(encoding="cp1251")
+        if name == microphone_name:
             index = i
-            selected = "*"
+            # selected = "*"
     return index
 
 def get_microphone_list():
