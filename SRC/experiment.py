@@ -19,6 +19,8 @@ ASR_SELECT_WER = "MIN"
 START_GUARD_TIME = 1
 RECOGNIZE_AUDIO_REF_FILE = 0
 
+# def gather_exp_data
+
 if __name__ == "__main__":
     start_time = time.clock()
     time.sleep(START_GUARD_TIME)
