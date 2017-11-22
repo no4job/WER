@@ -194,6 +194,10 @@ def syncronize_str(ref_file,compared_str):
     compared_file.write(compared_str)
     result = syncronize_file(ref_file,compared_file)
     return result
+def word_count(file):
+    with open(file,'r', encoding='utf-8') as f:
+        str = f.read().replace('\n', ' ').replace('\r', ' ')
+        return len(str.split())
 
 def syncronize_file(ref_file,compared_file):
     # all_syncronized_list = []

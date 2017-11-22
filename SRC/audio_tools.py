@@ -9,20 +9,35 @@ import threading
 AUDIO_REF_DIR_PATH = '../REF_AUDIO_IN/'
 SAMPLE_RATE = 16000
 # DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
-# DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
 # DEFAULT_MICROPHONE_NAME = "Микрофон (Realtek High Definiti"
-DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual"
+# DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual"
 
 
 RECORD_GUARD_TIME = 0.1
 
 def wav_duration(fname):
+    duration = 0
     with contextlib.closing(wave.open(fname,'r')) as f:
         frames = f.getnframes()
-    rate = f.getframerate()
-    duration = frames / float(rate)
-    # print(duration)
+        rate = f.getframerate()
+        if rate == None or rate == 0:
+            duration = 0
+        else:
+            duration = frames / float(rate)
+        # print(duration)
     return duration
+
+def wav_params(fname):
+    with contextlib.closing(wave.open(fname,'r')) as f:
+        wp = f.getparams()
+        wcp ={}
+        wcp["flow_rate"]= wp["nchannel"]*wp["sampwidth"]*8*wp["framerate"]/1000.0
+        wcp["sample_rate"] = wp["framerate"]/1000.0
+        wcp["bits_per_channel"] = wp["sampwidth"]*8
+        wcp["number_of_channels"] = wp["nchannel"]
+        wcp["compression"] = wp["compnamel"]
+        return wcp
 
 def get_microphone_index_by_name(microphone_name):
     index = None

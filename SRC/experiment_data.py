@@ -1,52 +1,29 @@
 import collections
 import copy
-'''
-class FixedDict(collections.MutableMapping):
-    def __init__(self, data):
-        self.__data = data
 
-    def __len__(self):
-        return len(self.__data)
 
-    def __iter__(self):
-        return iter(self.__data)
-
-    def __setitem__(self, k, v):
-        if k not in self.__data:
-            raise KeyError(k)
-
-        self.__data[k] = v
-
-    def __delitem__(self, k):
-        raise NotImplementedError
-
-    def __getitem__(self, k):
-        return self.__data[k]
-
-    def __contains__(self, k):
-        return k in self.__data
-'''
 class exp_data:
     def __init__(self):
         self.current_repetition = None
         self.repetition_id = 0
-        self.data = dict.fromkeys("common","source","final_result","activity","installation","settings",
-                                  "final_log","comments","repetition_data")
+        self.data = dict.fromkeys(["common","source","final_result","activity","installation","settings",
+                                  "final_log","comment","repetition"])
         self.get_common()
         self.get_source()
-        self.get_result()
+        self.get_final_result()
         self.get_activity()
         self.get_installation()
         self.get_settings()
-        self.get_log()
+        self.get_final_log()
         self.get_comment()
+        self.get_repetition()
         # self.data_r = copy.deepcopy(self.data)
     
         
     def get_common(self):
         if self.data["common"] != None:
             return self.data["common"]
-        self.data["common"] = dict.fromkeys("group_id","group_description","exp_id","exp_description")
+        self.data["common"] = dict.fromkeys(["group_id","group_description","exp_id","exp_description"])
         return self.data["common"]
 
     def set_common(self,**kwargs):
@@ -59,9 +36,9 @@ class exp_data:
     def get_source(self):
         if self.data["source"] != None:
             return self.data["source"]
-        source_audio = dict.fromkeys("file_name","file_path","record_description","duration","format_description",
-                                     "speech_tempo","speaker_id","speaker_name","speaker_description")
-        source_text = dict.fromkeys("file_name","source_path","text_description","word_number")
+        source_audio = dict.fromkeys(["file_name","file_path","record_description","duration","format_description",
+                                     "speech_tempo","speaker_id","speaker_name","speaker_description"])
+        source_text = dict.fromkeys(["file_name","file_path","text_description","word_number"])
         source =  dict(audio = source_audio,text = source_text)
         self.data["source"] = source
         return self.data["source"]
@@ -80,7 +57,7 @@ class exp_data:
     def get_final_result(self):
         if self.data["final_result"] != None:
             return self.data["final_result"]
-        final_result = dict.fromkeys("wer_min","wer_max","wer_avg")
+        final_result = dict.fromkeys(["wer_min","wer_max","wer_avg"])
         self.data["final_result"]=final_result
         return self.data["final_result"]
 
@@ -90,8 +67,8 @@ class exp_data:
 
     def get_activity(self):
         if self.data["activity"] != None:
-            return self.data["action"]
-        self.data["action"] = dict.fromkeys("activity_decription","activity_repetition_number")
+            return self.data["activity"]
+        self.data["activity"] = dict.fromkeys(["activity_decription","activity_repetition_number"])
 
     def set_activity(self,**kwargs):
         for k,v in kwargs.items():
@@ -101,8 +78,8 @@ class exp_data:
     def get_installation(self):
         if self.data["installation"] != None:
             return self.data["installation"]
-        equipment = list(dict.fromkeys("id","name","type","description"),)
-        room = dict.fromkeys("id","name","type","description")
+        equipment = list([dict.fromkeys(["id","name","type","description"])])
+        room = dict.fromkeys(["id","name","type","description"])
         installation = dict(equipment = equipment,room = room)
         self.data["installation"]=installation
         return self.data["installation"]
@@ -112,7 +89,7 @@ class exp_data:
             equipment_ = copy.deepcopy(self.data["installation"]["equipment"][0])
             for k,v in equipment.items():
                 equipment_[k] = v
-                self.data["installation"]["equipment"].append(equipment_,)
+            self.data["installation"]["equipment"].append([equipment_])
         del self.data["installation"]["equipment"][0]
 
     def set_room(self,**kwargs):
@@ -122,11 +99,11 @@ class exp_data:
     def get_settings(self):
         if self.data["settings"] != None:
             return self.data["settings"]
-        playback_stage = dict.fromkeys("id","equipment_id","name","type","gain","gain_name")
-        playback = list(playback_stage,)
-        record_stage = dict.fromkeys("id","equipment_id","name","type","gain","gain_name")
-        record = list(record_stage,)
-        asr = dict.fromkeys("options","asr_repetition_number","selection_type")
+        playback_stage = dict.fromkeys(["id","equipment_id","name","type","gain","gain_name"])
+        playback = list([playback_stage])
+        record_stage = dict.fromkeys(["id","equipment_id","name","type","gain","gain_name"])
+        record = list([record_stage])
+        asr = dict.fromkeys(["options","asr_repetition_number","selection_type"])
         settings = dict(playback = playback,record = record,asr = asr)
         self.data["settings"]=settings
         return self.data["settings"]
@@ -136,15 +113,15 @@ class exp_data:
             playback_stage_ = copy.deepcopy(self.data["settings"]["playback"][0])
             for k,v in playback_stage.items():
                 playback_stage_[k] = v
-                self.data["settings"]["playback"].append(playback_stage_,)
+            self.data["settings"]["playback"].append([playback_stage_])
         del self.data["settings"]["playback"][0]
 
-    def set_recordk(self,record):
+    def set_record(self,record):
         for record_stage in record:
             record_stage_ = copy.deepcopy(self.data["settings"]["record"][0])
             for k,v in record_stage.items():
                 record_stage_[k] = v
-                self.data["settings"]["record"].append(record_stage_,)
+            self.data["settings"]["record"].append([record_stage_])
         del self.data["settings"]["record"][0]
 
     def set_asr(self,**kwargs):
@@ -154,8 +131,8 @@ class exp_data:
     def get_final_log(self):
         if self.data["final_log"] != None:
             return self.data["final_log"]
-        final_log = dict.fromkeys("exp_start_time","exp_end_time","success","return_code","executed_repetitions",
-                                  "final_description")
+        final_log = dict.fromkeys(["exp_start_time","exp_end_time","success","return_code","executed_repetitions",
+                                  "final_description"])
         self.data["final_log"]=final_log
         return self.data["final_log"]
 
@@ -167,7 +144,7 @@ class exp_data:
     def get_comment(self):
         if self.data["comment"] != None:
             return self.data["comment"]
-            self.data["comment"]=""
+        self.data["comment"]=""
         return self.data["comment"]
 
     def set_comment(self,**kwargs):
@@ -186,8 +163,8 @@ class exp_data:
             return self.current_repetition
         if self.data["repetition"] == None:
             self.data["repetition"] = []
-        repetition = dict.fromkeys("repetition_result","repetition_log")
-        self.data["repetition"].append(repetition,)
+        repetition = dict.fromkeys(["repetition_result","repetition_log"])
+        self.data["repetition"].append([repetition])
         repetition["repetition_result"] = self.get_repetition_result(repetition)
         repetition["repetition_log"] = self.get_repetition_log(repetition)
         self.current_repetition = repetition
@@ -196,10 +173,10 @@ class exp_data:
     def get_repetition_result(self,repetition):
         if repetition["repetition_result"] != None:
             return repetition["repetition_result"]
-        result_audio = dict.fromkeys("file_name","source_path","record_description","duration","format_description",
-                                     "speech_tempo","speaker_id","speaker_name","speaker_description")
-        result_text = dict.fromkeys("file_name","source_path","text_description","word_number")
-        wer = dict.fromkeys("wer_all","wer_min","wer_max")
+        result_audio = dict.fromkeys(["file_name","source_path","record_description","duration","format_description",
+                                     "speech_tempo","speaker_id","speaker_name","speaker_description"])
+        result_text = dict.fromkeys(["file_name","source_path","text_description","word_number"])
+        wer = dict.fromkeys(["wer_all","wer_min","wer_max"])
         repetition_result = dict(audio = result_audio,text = result_text,wer = wer)
         return repetition_result
         
@@ -217,17 +194,17 @@ class exp_data:
             repetition["repetition_result"]["wer"][k] = v
             
     def set_repetition_result(self,repetition,audio,text,wer):
-        self.set_result_audio(self,repetition,audio)
-        self.set_result_text(self,repetition,text)
-        self.set_result_wert(self,repetition,wer)
+        self.set_result_audio(repetition,**audio)
+        self.set_result_text(repetition,**text)
+        self.set_result_wer(repetition,**wer)
 
 
     def get_repetition_log(self,repetition):
         if repetition["repetition_log"] != None:
             return repetition["repetition_log"]
-        repetition_log = dict.fromkeys("repetition_id","repetition_start_time","repetition_end_time","success",
-                                       "return_code","description","repetition_event_log")
-        repetition_event_log = list(dict.fromkeys("time","event_id","event_type","event_description"),)
+        repetition_log = dict.fromkeys(["repetition_id","repetition_start_time","repetition_end_time","success",
+                                       "return_code","description","repetition_event_log"])
+        repetition_event_log = list([dict.fromkeys(["time","event_id","event_type","event_description"])])
         repetition_log["repetition_event_log"] = repetition_event_log
         return repetition_log
 
@@ -240,5 +217,5 @@ class exp_data:
             repetition_event_log_ = copy.deepcopy(repetition["repetition_log"]["repetition_event_log"][0])
             for k,v in event.items():
                 repetition_event_log_[k] = v
-            repetition_event_log.append(repetition_event_log_,)
+            repetition_event_log.append([repetition_event_log_])
         repetition["repetition_log"]["repetition_event_log"][0]=repetition_event_log
