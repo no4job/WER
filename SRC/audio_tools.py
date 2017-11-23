@@ -17,7 +17,9 @@ SAMPLE_RATE = 16000
 # DEFAULT_MICROPHONE_NAME_CUT = "Микрофон (Realtek High Definiti"
 # DEFAULT_MICROPHONE_NAME_CUT = "DVS Receive  1-2 (Dante Virtual"
 
-DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+# DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual Soundcard)"
+
 # DEFAULT_MICROPHONE_NAME = "Микрофон (Steam Streaming Microphone)"
 
 DEFAULT_MICROPHONE_NAME_CUT = DEFAULT_MICROPHONE_NAME[:31]
