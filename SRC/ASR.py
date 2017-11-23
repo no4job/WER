@@ -3,7 +3,7 @@ import sys
 import os
 import pickle
 
-IPC_FILE = '..\\IPC\\asr_responce_lst.pickle'
+IPC_FILE = '..\\WRK\\IPC\\asr_responce_lst.pickle'
 
 '''
 DEFAULT_KEY_VALUE = 'paste-your-own-key'

@@ -3,7 +3,7 @@ import pickle
 # import dill
 # import sys
 import os
-IPC_FILE = '..\\IPC\\asr_responce_lst.pickle'
+IPC_FILE = '..\\WRK\\IPC\\asr_responce_lst.pickle'
 """
 use it like
 ./asrclient-cli.py -k <your-key> --callback-module advanced_callback_example --silent <path-to-your-sound.wav>
