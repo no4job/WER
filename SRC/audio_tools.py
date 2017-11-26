@@ -17,8 +17,8 @@ SAMPLE_RATE = 16000
 # DEFAULT_MICROPHONE_NAME_CUT = "Микрофон (Realtek High Definiti"
 # DEFAULT_MICROPHONE_NAME_CUT = "DVS Receive  1-2 (Dante Virtual"
 
-# DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
-DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual Soundcard)"
+DEFAULT_MICROPHONE_NAME = "Микрофон (B525 HD Webcam)"
+# DEFAULT_MICROPHONE_NAME = "DVS Receive  1-2 (Dante Virtual Soundcard)"
 
 # DEFAULT_MICROPHONE_NAME = "Микрофон (Steam Streaming Microphone)"
 
@@ -148,6 +148,20 @@ def show_device_list(all_device_volume,selected_name = None):
                 selected,default,
                 device["Name"][:31],device["Name"][31:],space,device["MasterVolumeLevel"],
                   device["VolumeLevelScalar"], device["VolumeRange"][0],device["VolumeRange"][1],device["VolumeRange"][2]))
+
+
+
+def get_selected_devices():
+    all_device_volume = get_device_volume_list_ipc()
+    selected_device = dict.fromkeys("in","out")
+    selected_device["out"] = all_device_volume["default_out"]
+    selected_in_device = None
+    all_in_device = all_device_volume["in"]
+    for device in all_in_device:
+        if device["Name"] == DEFAULT_MICROPHONE_NAME:
+            selected_in_device["in"] = device
+            break
+    return selected_in_device
 
 if __name__ == '__main__':
     show_microphone_list(get_microphone_list(),selected_name = DEFAULT_MICROPHONE_NAME_CUT)

@@ -6,6 +6,8 @@ import audio_tools
 import shutil
 import ntpath
 import experiment_data as ed
+import zipfile
+import datetime
 CALC_DIR = 0
 REF_FILE_DIR_PATH = '../WRK/TXT_REF/'
 # REF_FILE_NAME = 'ref.txt'
@@ -22,9 +24,11 @@ START_GUARD_TIME = 1
 RECOGNIZE_AUDIO_REF_FILE = 0
 IPC_DIR_PATH = '../WRK/IPC/'
 EXP_DIR_LIST =[REF_FILE_DIR_PATH,AUDIO_REF_DIR_PATH,AUDIO_IN_DIR_PATH,COMPARED_FILE_DIR_PATH,OUT_CSV_FILE_DIR_PATH,IPC_DIR_PATH]
+EXP_ARCHIVE_DIR_LIST =[REF_FILE_DIR_PATH,AUDIO_REF_DIR_PATH,AUDIO_IN_DIR_PATH,COMPARED_FILE_DIR_PATH,OUT_CSV_FILE_DIR_PATH]
 EXP_AUDIO_REF = '../WRK/EXP_REF_FILES/AUDIO_REF/'
 EXP_TXT_REF = '../WRK/EXP_REF_FILES/TXT_REF/'
-
+EXP_ARCHIVE = '../WRK/EXP_ARCHIVE/'
+EXP_WRK_DIR = '../WRK/'
 EQIOMENT_PROFILE =[ {"id":"1","name":"name1","type":"type1","description":"test equipment 1"},
                       {"id":"2","name":"name2","type":"type2","description":"test equipment 2"}
                     ]
@@ -37,55 +41,80 @@ def prepare_exp_dir(dir_list):
             shutil.rmtree(dir)
         os.mkdir(dir)
 
-def default_exp_data(src_audio_ref_file,src_txt_ref_file,eqioment_profile,room_profile,copy_audio = True,playback = True):
+# **** all experiment data known  before the experiment begins ****
+def default_exp_data(src_profile,dictor_profile,equipment_profile,room_profile,exp_common,activity,
+                     ext_playback_profile,ext_record_profile,asr_profile):
     exp_data = ed.exp_data()
 
     # ******common section******
-    exp_data.set_common(group_id = "",group_description = "",exp_id = "",
-                    exp_description = "")
+    exp_data.set_exp_common(group_id = exp_common["group_id"],group_description = exp_common["group_description"],
+                        exp_id = exp_common["exp_id"],exp_description = exp_common["exp_description"])
 
     # ******source section******
-    wcp=audio_tools.wav_params(src_audio_ref_file)
-    duration = audio_tools.wav_duration(src_audio_ref_file)
-    w_count = wer.word_count(src_txt_ref_file)
+    wcp=audio_tools.wav_params(src_profile["src_audio_ref_file"])
+    duration = audio_tools.wav_duration(src_profile["src_audio_ref_file"])
+    w_count = wer.word_count(src_profile["src_txt_ref_file"])
     if duration == None or duration == 0:
         speech_tempo = 0
     else:
         speech_tempo = w_count/duration
 
     exp_data.set_source_audio(
-        file_name =  ntpath.basename(src_audio_ref_file),
-        file_path = src_audio_ref_file,
+        file_name =  ntpath.basename(src_profile["src_audio_ref_file"]),
+        file_path = src_profile["src_audio_ref_file"],
         record_description = "",
         duration = duration,
         format_description ="{}kbit/s, {}kHz, {}bits, {}channel, ".format(wcp["flow_rate"],
                                                                           wcp["sample_rate"],wcp["bits_per_channel"],
                                                                           wcp["number_of_channels"],wcp["compression"]),
         speech_tempo = speech_tempo,
-        speaker_id = "",
-        speaker_name = "",
-        speaker_description = ""
+        speaker_id = dictor_profile["id"],
+        speaker_name = dictor_profile["name"],
+        speaker_description = dictor_profile["description"],
         )
 
     exp_data.set_source_text(
-        file_name =  ntpath.basename(src_txt_ref_file),
-        file_path = src_txt_ref_file,
+        file_name =  ntpath.basename(src_profile["src_txt_ref_file"]),
+        file_path = src_profile["src_txt_ref_file"],
         text_description  ="",
         word_number = w_count
     )
     # ******activity section******
 
     exp_data.set_activity(
-        activity_decription =  "",
-        activity_repetition_number = ""
+        activity_decription =  activity["decription"],
+        activity_repetition_number = activity["repetition_number"]
     )
 
     # ******installation section******
-    exp_data.set_equipment(eqioment_profile)
+    exp_data.set_equipment(equipment_profile)
     exp_data.set_room(**room_profile)
 
     # ******settings section******
-    exp_data.set_playback()
+    exp_data.set_playback(ext_playback_profile)
+    ext_record_profile(ext_record_profile)
+    selected_devices = audio_tools.get_selected_devices()
+    playback_profile = dict.fromkeys("equipment_id","param_set")
+    playback_profile["equipment_name"] =  selected_devices["out"]["Name"]
+    playback_profile["equipment_type"] =  "out audio device"
+    playback_profile["param_set"] = {}
+    playback_profile["param_set"]["MasterVolumeLevel"] =  selected_devices["out"]["MasterVolumeLevel"]
+    playback_profile["param_set"]["VolumeLevelScalar"]=  selected_devices["out"]["VolumeLevelScalar"]
+    playback_profile["param_set"]["VolumeRange"] =  selected_devices["out"]["VolumeRange"]
+
+    record_profile = dict.fromkeys("equipment_name","equipment_type","param_set")
+    record_profile["equipment_name"] =  selected_devices["out"]["Name"]
+    record_profile["equipment_type"] =  "input audio device"
+    record_profile["param_set"] = {}
+    record_profile["param_set"]["MasterVolumeLevel"] =  selected_devices["in"]["MasterVolumeLevel"]
+    record_profile["param_set"]["VolumeLevelScalar"]=  selected_devices["in"]["VolumeLevelScalar"]
+    record_profile["param_set"]["VolumeRange"] =  selected_devices["in"]["VolumeRange"]
+
+    exp_data.set_record(playback_profile)
+    exp_data.set_record(record_profile)
+    exp_data.set_asr(**asr_profile)
+
+
 
 def execute_exp(src_audio_ref_file,src_txt_ref_file,exp_data=None,copy_audio = True,playback = True):
 
@@ -179,14 +208,37 @@ def generate_test_file_names(src_audio_ref_file_name):
     src_txt_ref_file = os.path.abspath(EXP_TXT_REF+src_txt_ref_file_name)
     return src_audio_ref_file,src_txt_ref_file_name,src_txt_ref_file
 
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file),
+                       os.path.relpath(os.path.join(root, file),
+                                       os.path.join(path, '..')))
+def archive_exp(archive_name):
+    zipf = zipfile.ZipFile(archive_name, 'w', zipfile.ZIP_DEFLATED)
+    for dir in EXP_ARCHIVE_DIR_LIST:
+        zipdir(dir, zipf)
+    zipf.close()
+
+def zip_archive():
+    zipf = zipfile.ZipFile(EXP_ARCHIVE+'Python.zip', 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(EXP_ARCHIVE):
+        for file in files:
+            zipf.write(os.path.join(root, file))
+
+
 if __name__ == "__main__":
+    # print('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()).replace(":","_"))
+    # exit (0)
     exp_data = ed.exp_data()
-    exp_data.set_common(group_id = 1,group_description = "test",exp_id = 1,
-                        exp_description = "playback and recognize all_text_16_my_voice_cut.wav")
+    # exp_data.set_common(group_id = 1,group_description = "test",exp_id = 1,
+    #                     exp_description = "playback and recognize all_text_16_my_voice_cut.wav")
     src_audio_ref_file_name = 'all_text_16_my_voice_cut.wav'
     src_audio_ref_file,src_txt_ref_file_name,src_txt_ref_file = generate_test_file_names(src_audio_ref_file_name)
 
     execute_exp(src_audio_ref_file,src_txt_ref_file,exp_data)
+    archive_exp(EXP_ARCHIVE+"exp{:%Y-%m-%d %H:%M:%S}.zip".format(datetime.datetime.now()).replace(":","_"))
     exit(0)
 
     # dict.fromkeys("group_id","group_description","exp_id","exp_description")

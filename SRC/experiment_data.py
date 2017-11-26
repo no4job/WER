@@ -6,7 +6,7 @@ class exp_data:
     def __init__(self):
         self.current_repetition = None
         self.repetition_id = 0
-        self.data = dict.fromkeys(["common","source","final_result","activity","installation","settings",
+        self.data = dict.fromkeys(["exp_common","source","final_result","activity","installation","settings",
                                   "final_log","comment","repetition"])
         self.get_common()
         self.get_source()
@@ -21,16 +21,16 @@ class exp_data:
     
         
     def get_common(self):
-        if self.data["common"] != None:
-            return self.data["common"]
-        self.data["common"] = dict.fromkeys(["group_id","group_description","exp_id","exp_description"])
-        return self.data["common"]
+        if self.data["exp_common"] != None:
+            return self.data["exp_common"]
+        self.data["exp_common"] = dict.fromkeys(["group_id","group_description","exp_id","exp_description"])
+        return self.data["exp_common"]
 
-    def set_common(self,**kwargs):
+    def set_exp_common(self,**kwargs):
         for k,v in kwargs.items():
             # if k not in self.data["group"]:
             #     raise ValueError('Bad parameter in {}: {}:{}'.format("group",k,v))
-            self.data["common"][k] = v
+            self.data["exp_common"][k] = v
 
 
     def get_source(self):
@@ -99,9 +99,9 @@ class exp_data:
     def get_settings(self):
         if self.data["settings"] != None:
             return self.data["settings"]
-        playback_stage = dict.fromkeys(["id","equipment_id","name","type","gain","gain_name"])
+        playback_stage = dict.fromkeys(["equipment_id","param_set"])
         playback = list([playback_stage])
-        record_stage = dict.fromkeys(["id","equipment_id","name","type","gain","gain_name"])
+        record_stage = dict.fromkeys(["equipment_id","param_set"])
         record = list([record_stage])
         asr = dict.fromkeys(["options","asr_repetition_number","selection_type"])
         settings = dict(playback = playback,record = record,asr = asr)
@@ -112,7 +112,10 @@ class exp_data:
         for playback_stage in playback:
             playback_stage_ = copy.deepcopy(self.data["settings"]["playback"][0])
             for k,v in playback_stage.items():
-                playback_stage_[k] = v
+                if k == "param_set":
+                    playback_stage_[k] = copy.deepcopy(v)
+                else:
+                    playback_stage_[k] = v
             self.data["settings"]["playback"].append([playback_stage_])
         del self.data["settings"]["playback"][0]
 
@@ -120,7 +123,10 @@ class exp_data:
         for record_stage in record:
             record_stage_ = copy.deepcopy(self.data["settings"]["record"][0])
             for k,v in record_stage.items():
-                record_stage_[k] = v
+                if k == "param_set":
+                    record_stage_[k] = copy.deepcopy(v)
+                else:
+                    record_stage_[k] = v
             self.data["settings"]["record"].append([record_stage_])
         del self.data["settings"]["record"][0]
 
